@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: service-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: service-mail           # 路由的唯一标识
+          uri: lb://service-mail  # 如果断言成功，将要转发去的地址
+          order: 0                    # 优先级，越小优先级越高
+          predicates:                 # 断言，满足所有断言，才会进行转发
+            - Path=/*/mail/**       # 注意：这是使用= 不是：
+        - id: service-user
+          uri: lb://service-user
+          order: 1
+          predicates:
+            - Path=/*/user/**
+        - id: service-discussPost
+          uri: lb://service-discussPost
+          order: 2
+          predicates:
+            - Path=/**/discussPost/**
+        - id: service-discussPosts
+          uri: lb://service-discussPost
+          order: 3
+          predicates:
+            - Path=/**/discussPosts/**
+        - id: service-comment
+          uri: lb://service-discussPost
+          order: 4
+          predicates:
+            - Path=/**/comment/**
+
+
+server:
+  # 指定服务器的端口号
+  port: 80
+
